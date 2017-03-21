@@ -1,0 +1,10 @@
+{
+    "name": "odbav-to/presenter-route",
+    "description": "Route for Nette framework that supports single action presenters and HTTP methods.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "OdbavTo\\PresenterRoute\\": "src"
+        }
+    }
+}
