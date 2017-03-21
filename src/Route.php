@@ -36,11 +36,24 @@ class Route implements IRouter
 	/**
 	 * Maps HTTP request to a Request object.
 	 *
-	 * @return Request|NULL
+	 * @param \Nette\Http\IRequest $httpRequest
+	 *
+	 * @return \Nette\Application\Request|NULL
 	 */
-	function match(Nette\Http\IRequest $httpRequest)
+	public function match(Nette\Http\IRequest $httpRequest)
 	{
-		// TODO: Implement match() method.
+		if (!$this->isHttpMethodSupported($httpRequest->getMethod())) {
+			return NULL;
+		}
+
+		return new Request(
+			$this->presenterClassName,
+			$httpRequest->getMethod(),
+			$httpRequest->getQuery(),
+			$httpRequest->getPost(),
+			$httpRequest->getFiles(),
+			[Request::SECURED => $httpRequest->isSecured()]
+		);
 	}
 
 
@@ -52,5 +65,15 @@ class Route implements IRouter
 	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
 	{
 		// TODO: Implement constructUrl() method.
+	}
+
+
+	private function isHttpMethodSupported($httpMethod)
+	{
+		if (is_array($this->supportedHttpMethods)) {
+			return in_array($httpMethod, $this->supportedHttpMethods, TRUE);
+		}
+
+		return TRUE;
 	}
 }
