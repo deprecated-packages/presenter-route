@@ -2,9 +2,25 @@
     "name": "odbav-to/presenter-route",
     "description": "Route for Nette framework that supports single action presenters and HTTP methods.",
     "license": "MIT",
+    "require": {
+        "nette/application": "2.4.*",
+        "nette/di": "2.4.*",
+        "nette/http": "2.4.*"
+    },
+    "require-dev": {
+        "nette/bootstrap": "2.4.*",
+        "nette/neon": "2.4.*",
+        "nette/utils": "2.4.*",
+        "phpunit/phpunit": "^6.0"
+    },
     "autoload": {
         "psr-4": {
             "OdbavTo\\PresenterRoute\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OdbavTo\\PresenterRoute\\Tests\\": "tests"
         }
     }
 }
