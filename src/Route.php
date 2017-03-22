@@ -38,15 +38,19 @@ class Route implements IRouter
 	 *
 	 * @param \Nette\Http\IRequest $httpRequest
 	 *
-	 * @return \Nette\Application\Request|NULL
+	 * @return Request|NULL
 	 */
 	public function match(Nette\Http\IRequest $httpRequest)
 	{
+		$path = $httpRequest->getUrl()->getPath();
+
 		if (!$this->isHttpMethodSupported($httpRequest->getMethod())) {
 			return NULL;
 		}
-		
-		//TODO: route matching..
+
+		if ($path !== $this->route) {
+			return NULL;
+		}
 
 		return new Request(
 			$this->presenterClassName,
@@ -62,7 +66,11 @@ class Route implements IRouter
 	/**
 	 * Constructs absolute URL from Request object.
 	 *
-	 * @return string|NULL
+	 * @param Request $appRequest
+	 * @param \Nette\Http\Url $refUrl
+	 *
+	 * @return NULL|string
+	 * @throws \Exception
 	 */
 	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
 	{
