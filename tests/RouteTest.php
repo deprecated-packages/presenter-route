@@ -1,6 +1,7 @@
 <?php
 
-namespace OdbavTo\Tests\PresenterRoute;
+namespace OdbavTo\PresenterRoute\Tests;
+
 
 use PHPUnit\Framework\TestCase;
 use OdbavTo\PresenterRoute\Route;
@@ -9,6 +10,12 @@ use Nette\Http\Request;
 
 class RouteTest extends TestCase
 {
+	public function testMatch()
+	{
+		$this->assertTrue(true);
+	}
+	
+	
 	public function match($route, $url)
 	{
 		$httpRequest = new Request($url);
