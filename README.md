@@ -8,12 +8,10 @@ Routes for Nette single action presenters with HTTP methods support.
 ## Routes
 ```php
 use OdbavTo\PresenterRoute\Route;
-use OdbavTo\PresenterRoute\RestRoute;
 use Nette\Application\Routers\RouteList;
 
 $router = new RouteList();
 
-$router[] = new Route('/', HomepagePresenter::class);
 $router[] = new Route('/', HomepagePresenter::class);
 ```
 
@@ -34,7 +32,7 @@ $router[] = new Route('/', HomepagePresenter::class, [IRequest::POST]);
 ```php
 $router[] = new RestRoute::put('/', HomepagePresenter::class);
 // or
-$router[] = new Route('/', HomepagePresenter::class, [IRequest::PIT]);
+$router[] = new Route('/', HomepagePresenter::class, [IRequest::PUT]);
 ```
 
 ```php
