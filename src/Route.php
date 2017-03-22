@@ -12,7 +12,7 @@ class Route implements IRouter
 	/**
 	 * @var string
 	 */
-	private $url;
+	private $route;
 
 	/**
 	 * @var string
@@ -25,9 +25,9 @@ class Route implements IRouter
 	private $supportedHttpMethods;
 
 
-	public function __construct(string $url, string $presenterClassName , array $supportedHttpMethods = null)
+	public function __construct(string $route, string $presenterClassName , array $supportedHttpMethods = null)
 	{
-		$this->url = $url;
+		$this->route = $route;
 		$this->presenterClassName = $presenterClassName;
 		$this->supportedHttpMethods = $supportedHttpMethods;
 	}
@@ -45,6 +45,8 @@ class Route implements IRouter
 		if (!$this->isHttpMethodSupported($httpRequest->getMethod())) {
 			return NULL;
 		}
+		
+		//TODO: route matching..
 
 		return new Request(
 			$this->presenterClassName,
@@ -64,7 +66,22 @@ class Route implements IRouter
 	 */
 	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
 	{
-		// TODO: Implement constructUrl() method.
+		$baseUrl = $refUrl->getBaseUrl();
+		
+		$path = preg_replace_callback('/<([\w]+)>/g', function ($matches) use ($appRequest) {
+			foreach ($matches as $match) {
+				if ($value = $appRequest->getParameter($match)) {
+					return $value;
+				}
+			}
+		}, $this->route);
+		
+		if ($path === null) {
+			throw new \Exception();
+		}
+		
+		return $baseUrl . $path;
+		
 	}
 
 
