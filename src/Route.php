@@ -31,6 +31,12 @@ class Route implements IRouter
 		$this->presenterClassName = $presenterClassName;
 		$this->supportedHttpMethods = $supportedHttpMethods;
 	}
+	
+	
+	private function normalizePath(string $path): string
+	{
+		return trim($path, '/');
+	}
 
 
 	/**
@@ -42,7 +48,7 @@ class Route implements IRouter
 	 */
 	public function match(Nette\Http\IRequest $httpRequest)
 	{
-		$path = $httpRequest->getUrl()->getPath();
+		$path = $this->normalizePath($httpRequest->getUrl()->getPath());
 
 		if (!$this->isHttpMethodSupported($httpRequest->getMethod())) {
 			return NULL;
@@ -74,21 +80,26 @@ class Route implements IRouter
 	 */
 	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
 	{
-		$baseUrl = $refUrl->getBaseUrl();
+		$baseUrl = $refUrl->getHostUrl();
 		
-		$path = preg_replace_callback('/<([\w]+)>/g', function ($matches) use ($appRequest) {
+		$path = preg_replace_callback('/<([\w]+)>/', function ($matches) use ($appRequest) {
 			foreach ($matches as $match) {
+				if ($match[0] === '<') {
+					continue;
+				}
 				if ($value = $appRequest->getParameter($match)) {
 					return $value;
+				} else {
+					throw new RouteException('Parameter ' . $match . ' is not defined in Request.');
 				}
 			}
 		}, $this->route);
 		
 		if ($path === null) {
-			throw new \Exception();
+			throw new RouteException();
 		}
 		
-		return $baseUrl . $path;
+		return $baseUrl . '/' . $path;
 		
 	}
 
