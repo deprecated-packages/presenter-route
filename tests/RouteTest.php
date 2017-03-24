@@ -1,4 +1,4 @@
-<?php
+<?php declare (strict_types = 1);
 
 namespace OdbavTo\PresenterRoute\Tests;
 
@@ -14,6 +14,7 @@ use OdbavTo\PresenterRoute\RouteException;
 
 class RouteTest extends TestCase
 {	
+	private const PRESENTER = 'presenter';
 	/**
 	 * @test
 	 * @dataProvider matchProvider
@@ -23,11 +24,10 @@ class RouteTest extends TestCase
 	public function match(string $route, string $url, bool $result, array $params = [])
 	{
 		$httpRequest = new HttpRequest(new UrlScript($url));
-		$presenter = 'presenter';
-		$return = (new Route($route, $presenter, [IRequest::GET] ))->match($httpRequest);
+		$return = (new Route($route, self::PRESENTER, [IRequest::GET] ))->match($httpRequest);
 		
 		$appRequest = new AppRequest(
-			$presenter,
+			self::PRESENTER,
 			$httpRequest->getMethod(),
 			$params,
 			$httpRequest->getPost(),
@@ -45,8 +45,13 @@ class RouteTest extends TestCase
 			['hele/mese', 'http://www.hele.cz/hele/mese', true],
 			['hele/mese/', 'http://www.hele.cz/hele/mese', true],
 			['hele/mese', 'http://www.hele.cz/hele/mese/', true],
+			['hele/mese', 'http://www.hele.cz/hele/mese/?haha=1', true, ['haha' => 1]],
 			['hele/mese/', 'http://www.hele.cz/hele/mese/', true],
+			['hele/Mese/', 'http://www.hele.cz/hele/mese/', false],
+			['hele/Mese/', 'http://www.hele.cz/hele/Mese/', true],
+			['hele/mese/', 'http://www.hele.cz/hele/Mese/', false],
 			['hele/mese', 'http://www.hele.cz/hele/', false],
+			['hele/', 'http://www.hele.cz/hele/mese', false],
 			['he-le/mese/', 'http://www.hele.cz/he-le/mese/', true],
 			['he-le/mese/', 'http://www.hele.cz/hele/mese/', false],
 			['hele/mese/', 'http://www.hele.cz/he-le/mese/', false],
@@ -71,10 +76,8 @@ class RouteTest extends TestCase
 	 */
 	public function constructUrl(string $route, array $params, string $refUrl, string $expected, string $exception = '')
 	{
-		$presenter = 'presenter';
-		
 		$appRequest = new AppRequest(
-			$presenter,
+			self::PRESENTER,
 			IRequest::GET,
 			$params
 		);
@@ -83,7 +86,7 @@ class RouteTest extends TestCase
 			$this->expectException($exception);
 		}
 		
-		$return = (new Route($route, $presenter, [IRequest::GET] ))->constructUrl($appRequest, new Url($refUrl));
+		$return = (new Route($route, self::PRESENTER, [IRequest::GET] ))->constructUrl($appRequest, new Url($refUrl));
 		
 		$this->assertEquals($expected, $return);
 	}
@@ -104,6 +107,35 @@ class RouteTest extends TestCase
 			['hele/<id>/ok', ['id' => 123], 'http://www.hele.cz/hele/', 'http://www.hele.cz/hele/123/ok'],
 			['hele/<id>/<pid>', ['id' => 123, 'pid' => 456], 'http://www.hele.cz/hele/', 'http://www.hele.cz/hele/123/456'],
 			['hele/<id>/<pid>', ['id' => 123], 'http://www.hele.cz/hele/', 'http://www.hele.cz/hele/123/456', RouteException::class],
+		];
+	}
+	
+	/**
+	 * @dataProvider restProvider
+	 * @param string $method
+	 * @param string $route
+	 * @param string $url
+	 * @param bool $result
+	 */
+	public function testRest(?array $routeMethods, string $requestMethod, bool $result)
+	{
+		$restRoute = new Route('', self::PRESENTER, $routeMethods);
+		
+		$httpRequest = new HttpRequest(new UrlScript(), null, null, null, null, null, $requestMethod);
+		
+		$returned = $restRoute->match($httpRequest);
+		
+		$this->assertEquals($result, (bool) $returned);
+	}
+	
+	public function restProvider()
+	{
+		return [
+			[[IRequest::GET, IRequest::POST], IRequest::GET, true],
+			[[IRequest::GET], IRequest::POST , false],
+			[[IRequest::POST], IRequest::POST , true],
+			[null, IRequest::POST , true],
+			[[], IRequest::POST , false],
 		];
 	}
 }

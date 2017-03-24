@@ -60,7 +60,7 @@ class Route implements IRouter
 		// use named subpatterns to match params
 		$routeRegex = preg_replace('/<[\w_-]+>/', '(?$0[\w_-]+)', 
 			$route);
-		$routeRegex = '@' . $routeRegex . '@';
+		$routeRegex = '@^' . $routeRegex . '$@';
 
 		$result = preg_match($routeRegex, $path, $matches);
 		if (!$result) {
@@ -90,7 +90,7 @@ class Route implements IRouter
 	 * @param \Nette\Http\Url $refUrl
 	 *
 	 * @return NULL|string
-	 * @throws \Exception
+	 * @throws RouteException
 	 */
 	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
 	{
@@ -98,6 +98,9 @@ class Route implements IRouter
 		
 		$path = preg_replace_callback('/<([\w_-]+)>/', function ($matches) use ($appRequest)
 		{
+			if (!isset($matches[1])) {
+				throw new RouteException('There is something very wrong with matches: ' . var_export($matches, false));
+			}
 			$match = $matches[1];
 			$value = $appRequest->getParameter($match);
 			if ($value) {
@@ -108,7 +111,7 @@ class Route implements IRouter
 		}, $this->route);
 		
 		if ($path === null) {
-			throw new RouteException();
+			throw new RouteException('There was an error on constructing url with: ' . $this->route);
 		}
 		
 		return $baseUrl . '/' . $path;
@@ -116,7 +119,7 @@ class Route implements IRouter
 	}
 
 
-	private function isHttpMethodSupported($httpMethod)
+	private function isHttpMethodSupported(string $httpMethod)
 	{
 		if (is_array($this->supportedHttpMethods)) {
 			return in_array($httpMethod, $this->supportedHttpMethods, TRUE);
