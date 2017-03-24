@@ -5,7 +5,7 @@
     "require": {
         "nette/application": "2.4.*",
         "nette/di": "2.4.*",
-        "nette/http": "2.4.*",
+        "nette/http": "2.4.*"
     },
     "require-dev": {
         "nette/bootstrap": "2.4.*",
