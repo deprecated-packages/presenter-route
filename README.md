@@ -1,9 +1,16 @@
 # OdbavTo\PresenterRoute
 Routes for Nette single action presenters with HTTP methods support.
 
-## TODO
-- Parameters in URL
+## Install
+Easiest way is by composer `composer require odbav-to/presenter-route`
 
+You have to register IndependentSingleActionPresenter extension in your `config.neon`:
+```
+extensions:
+   	- Symplify\SymbioticController\DI\IndependentSingleActionPresenterExtension
+```
+
+And you are ready to go :-).
 
 ## Routes
 ```php

@@ -5,7 +5,8 @@
     "require": {
         "nette/application": "2.4.*",
         "nette/di": "2.4.*",
-        "nette/http": "2.4.*"
+        "nette/http": "2.4.*",
+        "symplify/symbiotic-controller": "@dev"
     },
     "require-dev": {
         "nette/bootstrap": "2.4.*",
