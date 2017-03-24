@@ -6,13 +6,13 @@
         "nette/application": "2.4.*",
         "nette/di": "2.4.*",
         "nette/http": "2.4.*",
-        "symplify/symbiotic-controller": "@dev"
     },
     "require-dev": {
         "nette/bootstrap": "2.4.*",
         "nette/neon": "2.4.*",
         "nette/utils": "2.4.*",
-        "phpunit/phpunit": "^6.0"
+        "phpunit/phpunit": "^6.0",
+        "symplify/symbiotic-controller": "@dev"
     },
     "autoload": {
         "psr-4": {
