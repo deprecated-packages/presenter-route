@@ -8,85 +8,85 @@ use Nette\Http\IRequest;
 class RestRoute
 {
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function get(string $url, string $presenterClassName)
+	public static function get(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::GET]);
+		return new Route($route, $presenterClassName, [IRequest::GET]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function post(string $url, string $presenterClassName)
+	public static function post(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::POST]);
+		return new Route($route, $presenterClassName, [IRequest::POST]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function put(string $url, string $presenterClassName)
+	public static function put(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::PUT]);
+		return new Route($route, $presenterClassName, [IRequest::PUT]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function delete(string $url, string $presenterClassName)
+	public static function delete(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::DELETE]);
+		return new Route($route, $presenterClassName, [IRequest::DELETE]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function patch(string $url, string $presenterClassName)
+	public static function patch(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::PATCH]);
+		return new Route($route, $presenterClassName, [IRequest::PATCH]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function head(string $url, string $presenterClassName)
+	public static function head(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::HEAD]);
+		return new Route($route, $presenterClassName, [IRequest::HEAD]);
 	}
 
 
 	/**
-	 * @param string $url
+	 * @param string $route
 	 * @param string $presenterClassName
 	 *
 	 * @return Route
 	 */
-	public static function options(string $url, string $presenterClassName)
+	public static function options(string $route, string $presenterClassName)
 	{
-		return new Route($url, $presenterClassName, [IRequest::OPTIONS]);
+		return new Route($route, $presenterClassName, [IRequest::OPTIONS]);
 	}
 }
