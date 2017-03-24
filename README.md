@@ -7,6 +7,7 @@ Easiest way is by composer `composer require odbav-to/presenter-route`
 You have to register IndependentSingleActionPresenter extension in your `config.neon`:
 ```
 extensions:
+   	- Symplify\SymfonyEventDispatcher\Adapter\Nette\DI\SymfonyEventDispatcherExtension
    	- Symplify\SymbioticController\DI\IndependentSingleActionPresenterExtension
 ```
 
