@@ -41,12 +41,8 @@ class Route implements IRouter
 
 	/**
 	 * Maps HTTP request to a Request object.
-	 *
-	 * @param \Nette\Http\IRequest $httpRequest
-	 *
-	 * @return Request|NULL
 	 */
-	public function match(Nette\Http\IRequest $httpRequest)
+	public function match(Nette\Http\IRequest $httpRequest): ?Request
 	{
 		$path = $this->normalizePath($httpRequest->getUrl()->getPath());
 
@@ -58,8 +54,7 @@ class Route implements IRouter
 		$route = str_replace('/', '\/', $route);
 		
 		// use named subpatterns to match params
-		$routeRegex = preg_replace('/<[\w_-]+>/', '(?$0[\w_-]+)', 
-			$route);
+		$routeRegex = preg_replace('/<[\w_-]+>/', '(?$0[\w_-]+)', $route);
 		$routeRegex = '@^' . $routeRegex . '$@';
 
 		$result = preg_match($routeRegex, $path, $matches);
@@ -85,14 +80,8 @@ class Route implements IRouter
 
 	/**
 	 * Constructs absolute URL from Request object.
-	 *
-	 * @param Request $appRequest
-	 * @param \Nette\Http\Url $refUrl
-	 *
-	 * @return NULL|string
-	 * @throws RouteException
 	 */
-	function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
+	public function constructUrl(Request $appRequest, Nette\Http\Url $refUrl): ?string
 	{
 		$baseUrl = $refUrl->getHostUrl();
 		
@@ -119,7 +108,7 @@ class Route implements IRouter
 	}
 
 
-	private function isHttpMethodSupported(string $httpMethod)
+	private function isHttpMethodSupported(string $httpMethod): bool
 	{
 		if (is_array($this->supportedHttpMethods)) {
 			return in_array($httpMethod, $this->supportedHttpMethods, TRUE);
