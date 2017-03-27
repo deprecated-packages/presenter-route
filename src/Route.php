@@ -23,19 +23,20 @@ class Route implements IRouter
 	 * @var array|null
 	 */
 	private $supportedHttpMethods;
+	
+	/**
+	 * @var PathMatcher
+	 */
+	private $pathMatcher;
 
 
-	public function __construct(string $route, string $presenterClassName , array $supportedHttpMethods = null)
+	public function __construct(string $route, string $presenterClassName ,
+			array $supportedHttpMethods = null, PathMatcher $pathMatcher = null)
 	{
 		$this->route = $route;
 		$this->presenterClassName = $presenterClassName;
 		$this->supportedHttpMethods = $supportedHttpMethods;
-	}
-	
-	
-	private function normalizePath(string $path): string
-	{
-		return trim($path, '/');
+		$this->pathMatcher = $pathMatcher ?: PathMatcher::getInstance();
 	}
 
 
@@ -44,27 +45,20 @@ class Route implements IRouter
 	 */
 	public function match(Nette\Http\IRequest $httpRequest): ?Request
 	{
-		$path = $this->normalizePath($httpRequest->getUrl()->getPath());
-
 		if (!$this->isHttpMethodSupported($httpRequest->getMethod())) {
 			return NULL;
 		}
 		
-		$route = $this->normalizePath($this->route);
-		$route = str_replace('/', '\/', $route);
+		$path = $httpRequest->getUrl()->getPath();
+		$matches = $this->pathMatcher->match($this->route, $path);
 		
-		// use named subpatterns to match params
-		$routeRegex = preg_replace('/<[\w_-]+>/', '(?$0[\w_-]+)', $route);
-		$routeRegex = '@^' . $routeRegex . '$@';
-
-		$result = preg_match($routeRegex, $path, $matches);
-		if (!$result) {
-			return NULL;
+		if ($matches === null) {
+			return null;
 		}
 		
 		$params = $httpRequest->getQuery();
-		if (is_array($matches) && count($matches) > 1) {
-			$params += array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+		if ($matches) {
+			$params += $matches;
 		}
 		
 		return new Request(
@@ -85,19 +79,7 @@ class Route implements IRouter
 	{
 		$baseUrl = $refUrl->getHostUrl();
 		
-		$path = preg_replace_callback('/<([\w_-]+)>/', function ($matches) use ($appRequest)
-		{
-			if (!isset($matches[1])) {
-				throw new RouteException('There is something very wrong with matches: ' . var_export($matches, false));
-			}
-			$match = $matches[1];
-			$value = $appRequest->getParameter($match);
-			if ($value) {
-				return $value;
-			} else {
-				throw new RouteException('Parameter ' . $match . ' is not defined in Request.');
-			}
-		}, $this->route);
+		$path = $this->pathMatcher->createUrl($this->route, $appRequest->getParameters());
 		
 		if ($path === null) {
 			throw new RouteException('There was an error on constructing url with: ' . $this->route);
