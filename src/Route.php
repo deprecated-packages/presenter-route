@@ -39,6 +39,18 @@ class Route implements IRouter
 	}
 
 
+	public function route(): string
+	{
+		return $this->route;
+	}
+
+
+	public function supportedHttpMethods(): ?array
+	{
+		return $this->supportedHttpMethods;
+	}
+
+
 	/**
 	 * Maps HTTP request to a Request object.
 	 */
