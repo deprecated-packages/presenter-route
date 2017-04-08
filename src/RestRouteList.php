@@ -3,6 +3,7 @@
 namespace OdbavTo\PresenterRoute;
 
 use Nette;
+use Nette\Application\Request;
 use Nette\Http\IRequest;
 
 class RestRouteList extends Nette\Application\Routers\RouteList
@@ -11,41 +12,31 @@ class RestRouteList extends Nette\Application\Routers\RouteList
 
 	private $mergedRoutes;
 
+	/** @var array  */
+	private $supportedHttpMethods = [];
 
 	public function match(IRequest $httpRequest): ?Nette\Application\Request
 	{
+		$appRequest = parent::match($httpRequest);
+		if ($appRequest) {
+			return $appRequest;
+		}
+
 		if ($httpRequest->getMethod() === IRequest::OPTIONS) {
 			/** @var Route $route */
 			foreach ($this as $route) {
+				$route->allowOnceAllMethods();
 				$appRequest = $route->match($httpRequest);
 				if ($appRequest !== NULL) {
-					$methods = $this->getMethodsForRoute($route->route());
-					$appRequest->setParameters([self::ALLOWED_METHODS_KEY => $methods]);
-
-					$appRequest->setPresenterName(OptionsPresenter::class);
-					return $appRequest;
+					$this->addSupportedHttpMethods($route->supportedHttpMethods());
 				}
 			}
-			return NULL;
+			return $this->createOptionsRequest();
 		}
 
-		return parent::match($httpRequest);
+		return NULL;
 	}
 
-
-	private function mergeRoute(string $route, array $supportedHttpMethods)
-	{
-		if (isset($this->mergedRoutes[$route])) {
-			$this->mergedRoutes[$route] = $this->mergedRoutes[$route] + $supportedHttpMethods;
-		} else {
-			$this->mergedRoutes[$route] = $supportedHttpMethods;
-		}
-	}
-
-	private function getMethodsForRoute(string $route): array
-	{
-		return isset($this->mergedRoutes[$route]) ? $this->mergedRoutes[$route] : [];
-	}
 
 	/**
 	 * @param mixed $index
@@ -58,8 +49,19 @@ class RestRouteList extends Nette\Application\Routers\RouteList
 			throw new RouteException('Argument must be ' . Route::class . ' descendant.');
 		}
 
-		$this->mergeRoute($route->route(), $route->supportedHttpMethods());
-
 		parent::offsetSet($index, $route);
+	}
+
+
+	private function addSupportedHttpMethods(array $methods)
+	{
+		$this->supportedHttpMethods = array_unique(array_merge($this->supportedHttpMethods, $methods));
+	}
+
+
+	private function createOptionsRequest()
+	{
+		$params = [self::ALLOWED_METHODS_KEY => $this->supportedHttpMethods];
+		return new Request(OptionsPresenter::class, IRequest::OPTIONS, $params);
 	}
 }

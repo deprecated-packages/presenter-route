@@ -31,6 +31,6 @@ class OptionsPresenter
 				implode(',', $methodsAllowed));
 		}
 
-		return new JsonResponse([]);
+		return new JsonResponse('');
 	}
 }

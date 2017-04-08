@@ -24,6 +24,9 @@ class Route implements IRouter
 	 */
 	private $supportedHttpMethods;
 
+	/** @var  bool */
+	private $allowOnceAllMethods = false;
+
 
 	public function __construct(string $route, string $presenterClassName , array $supportedHttpMethods = null)
 	{
@@ -39,15 +42,15 @@ class Route implements IRouter
 	}
 
 
-	public function route(): string
-	{
-		return $this->route;
-	}
-
-
 	public function supportedHttpMethods(): ?array
 	{
 		return $this->supportedHttpMethods;
+	}
+
+
+	public function allowOnceAllMethods()
+	{
+		$this->allowOnceAllMethods = TRUE;
 	}
 
 
@@ -122,6 +125,11 @@ class Route implements IRouter
 
 	private function isHttpMethodSupported(string $httpMethod): bool
 	{
+		if ($this->allowOnceAllMethods) {
+			$this->allowOnceAllMethods = FALSE;
+			return TRUE;
+		}
+
 		if (is_array($this->supportedHttpMethods)) {
 			return in_array($httpMethod, $this->supportedHttpMethods, TRUE);
 		}
