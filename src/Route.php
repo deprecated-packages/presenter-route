@@ -25,13 +25,13 @@ class Route implements IRouter
 	private $supportedHttpMethods;
 	
 	/**
-	 * @var PathMatcher
+	 * @var PathMatcherInterface
 	 */
 	private $pathMatcher;
 
 
 	public function __construct(string $route, string $presenterClassName ,
-			array $supportedHttpMethods = null, PathMatcher $pathMatcher = null)
+			array $supportedHttpMethods = null, PathMatcherInterface $pathMatcher = null)
 	{
 		$this->route = $route;
 		$this->presenterClassName = $presenterClassName;
@@ -56,10 +56,7 @@ class Route implements IRouter
 			return null;
 		}
 		
-		$params = $httpRequest->getQuery();
-		if ($matches) {
-			$params += $matches;
-		}
+		$params = array_merge($httpRequest->getQuery(), $matches);
 		
 		return new Request(
 			$this->presenterClassName,

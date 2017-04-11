@@ -2,30 +2,21 @@
 
 namespace OdbavTo\PresenterRoute;
 
-class PathMatcher
+class PathMatcher implements PathMatcherInterface
 {
 	/**
 	 * @var PathMatcher
 	 */
 	private static $instance;
 	
-	public static function getInstance(): PathMatcher
+	public static function getInstance(): self
 	{
 		if (!self::$instance) {
-			self::$instance = new PathMatcher();
+			self::$instance = new static();
 		}
 		return self::$instance;
 	}
-	
-	private function __construct()
-	{
-	}
 
-
-	private function normalizePath(string $path): string
-	{
-		return trim($path, '/');
-	}
 	
 	/**
 	 * @return array matched parameters
@@ -53,7 +44,8 @@ class PathMatcher
 			return [];
 		}
 	}
-	
+
+
 	public function createUrl(string $route, array $parameters): string
 	{
 		$path = preg_replace_callback('/<([\w_-]+)>/', function ($matches) use ($parameters)
@@ -71,5 +63,16 @@ class PathMatcher
 		}, $route);
 		
 		return $path;
+	}
+
+
+	private function __construct()
+	{
+	}
+
+
+	private function normalizePath(string $path): string
+	{
+		return trim($path, '/');
 	}
 }
