@@ -8,14 +8,12 @@ use Nette\Http\IRequest;
 
 class RestRouteList extends Nette\Application\Routers\RouteList
 {
-	const ALLOWED_METHODS_KEY = 'methods';
-
-	private $mergedRoutes;
+	const ALLOWED_METHODS_KEY = 'allowed_http_methods';
 
 	/** @var array  */
 	private $supportedHttpMethods = [];
 
-	public function match(IRequest $httpRequest): ?Nette\Application\Request
+	public function match(IRequest $httpRequest): ?Request
 	{
 		$appRequest = parent::match($httpRequest);
 		if ($appRequest) {
@@ -25,7 +23,7 @@ class RestRouteList extends Nette\Application\Routers\RouteList
 		if ($httpRequest->getMethod() === IRequest::OPTIONS) {
 			/** @var Route $route */
 			foreach ($this as $route) {
-				$route->allowOnceAllMethods();
+				$route->allowOnceAllHttpMethods();
 				$appRequest = $route->match($httpRequest);
 				if ($appRequest !== NULL) {
 					$this->addSupportedHttpMethods($route->supportedHttpMethods());

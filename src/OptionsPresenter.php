@@ -2,6 +2,7 @@
 
 namespace OdbavTo\PresenterRoute;
 
+use Nette\Application\BadRequestException;
 use Nette\Application\IResponse;
 use Nette\Application\Request;
 use Nette\Application\Responses\JsonResponse;
@@ -10,7 +11,7 @@ use Nette\Http\Response as HttpResponse;
 class OptionsPresenter
 {
 	/**
-	 * @var \Nette\Http\Response
+	 * @var HttpResponse
 	 */
 	private $httpResponse;
 
@@ -25,11 +26,12 @@ class OptionsPresenter
 		$methodsAllowed = $request->getParameter(RestRouteList::ALLOWED_METHODS_KEY);
 
 		if (empty($methodsAllowed)) {
-			$this->httpResponse->setCode(404);
-		} else {
-			$this->httpResponse->setHeader('Access-Control-Allow-Methods:',
-				implode(',', $methodsAllowed));
+			throw new BadRequestException('There are no HTTP methods allowed.');
 		}
+
+		$this->httpResponse->setHeader('Access-Control-Allow-Methods:',
+			implode(',', $methodsAllowed));
+
 
 		return new JsonResponse('');
 	}
