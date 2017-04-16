@@ -29,6 +29,9 @@ class Route implements IRouter
 	 */
 	private $pathMatcher;
 
+	/** @var  bool */
+	private $allowOnceAllHttpMethods = FALSE;
+
 
 	public function __construct(string $route, string $presenterClassName ,
 			array $supportedHttpMethods = null, PathMatcherInterface $pathMatcher = null)
@@ -37,6 +40,18 @@ class Route implements IRouter
 		$this->presenterClassName = $presenterClassName;
 		$this->supportedHttpMethods = $supportedHttpMethods;
 		$this->pathMatcher = $pathMatcher ?: PathMatcher::getInstance();
+	}
+
+
+	public function supportedHttpMethods(): ?array
+	{
+		return $this->supportedHttpMethods;
+	}
+
+
+	public function allowOnceAllHttpMethods()
+	{
+		$this->allowOnceAllHttpMethods = TRUE;
 	}
 
 
@@ -89,10 +104,26 @@ class Route implements IRouter
 
 	private function isHttpMethodSupported(string $httpMethod): bool
 	{
+		if ($this->areAllMethodsAllowed()) {
+			return TRUE;
+		}
+
 		if (is_array($this->supportedHttpMethods)) {
 			return in_array($httpMethod, $this->supportedHttpMethods, TRUE);
 		}
 
 		return TRUE;
+	}
+
+
+	private function areAllMethodsAllowed(): bool
+	{
+		if ($this->allowOnceAllHttpMethods) {
+			// this is just one time permission, so disallow it again
+			$this->allowOnceAllHttpMethods = FALSE;
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 }
