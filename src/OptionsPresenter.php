@@ -30,7 +30,7 @@ class OptionsPresenter
 			throw new BadRequestException('There are no HTTP methods allowed.');
 		}
 
-		$this->httpResponse->setHeader('Access-Control-Allow-Methods:', implode(',', $methodsAllowed));
+		$this->httpResponse->setHeader('Access-Control-Allow-Methods', implode(',', $methodsAllowed));
 
 		return new JsonResponse('');
 	}
