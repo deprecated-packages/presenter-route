@@ -3,12 +3,13 @@
 namespace OdbavTo\PresenterRoute;
 
 use Nette\Application\BadRequestException;
+use Nette\Application\IPresenter;
 use Nette\Application\IResponse;
 use Nette\Application\Request;
 use Nette\Application\Responses\JsonResponse;
 use Nette\Http\Response as HttpResponse;
 
-class OptionsPresenter
+class OptionsPresenter implements IPresenter
 {
 	/**
 	 * @var HttpResponse
@@ -22,7 +23,7 @@ class OptionsPresenter
 	}
 
 
-	public function __invoke(Request $request): IResponse
+	public function run(Request $request): IResponse
 	{
 		$methodsAllowed = $request->getParameter(RestRouteList::ALLOWED_METHODS_KEY);
 
@@ -33,5 +34,11 @@ class OptionsPresenter
 		$this->httpResponse->setHeader('Access-Control-Allow-Methods', implode(',', $methodsAllowed));
 
 		return new JsonResponse('');
+	}
+
+
+	public function __invoke(Request $request): IResponse
+	{
+		return $this->run($request);
 	}
 }
